@@ -1389,7 +1389,7 @@ namespace FileImport.LayoutSample
         #endregion
 
         #region "Enum"
-        public enum TipoRegistro : int
+        public enum RecordType : int
         {
             Header = 0,
             CapaLote = 1,

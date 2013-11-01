@@ -55,6 +55,10 @@
     <Compile Include="LayoutOperation\StopPoint.cs" />
     <Compile Include="LayoutSample\Amex.cs" />
     <Compile Include="LayoutSample\AmexLayout.cs" />
+    <Compile Include="LayoutSample\Sample2.cs" />
+    <Compile Include="LayoutSample\Sample2Layout.cs" />
+    <Compile Include="LayoutSample\Sample1.cs" />
+    <Compile Include="LayoutSample\Sample1Layout.cs" />
     <Compile Include="LayoutSample\Hipercard.cs" />
     <Compile Include="LayoutSample\HipercardLayout.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

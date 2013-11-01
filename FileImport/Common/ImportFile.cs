@@ -129,7 +129,7 @@ namespace FileImport.Common
             if(String.IsNullOrEmpty(FilePath.Trim()))
             {
                 _error = true;
-                _errorDescription = "Informe corretamente o nome do arquivo a processar.";
+                _errorDescription = "Informe corretamente o nome do arquivo a processar";
                 return false;
             }
 
@@ -162,7 +162,7 @@ namespace FileImport.Common
                     if(list.Contains(line.Identifier))
                     {
                         _error = true;
-                        _errorDescription = "Não é permitido linhas com o mesmo identificador!";
+                        _errorDescription = "Não é permitido linhas com o mesmo identificador! Verifique o campo [Identifier] na definição do arquivo";
                         return false;
                     }
                 
@@ -350,12 +350,12 @@ namespace FileImport.Common
             else if(this.ImportAttributes.ImportType == ImportType.Delimited)
             {
                 split = this.Line.Split(this.ImportAttributes.Delimiter.ToCharArray());
-                for(int i = 0; i < split.Length - 1;i++)
+                for(int i = 0; i < split.Length;i++)
                 {
                     this._dt.Columns.Add(new DataColumn("Col_" + (i + 1), typeof(string)));
                 }
                 this._currentLine = this._dt.NewRow();
-                for(int i = 0; i < split.Length - 1;i++)
+                for(int i = 0; i < split.Length;i++)
                 {
                     this._currentLine["Col_" + (i + 1)] = split[i];
                 }

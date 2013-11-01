@@ -28,31 +28,27 @@ namespace FileImport.LayoutSample
             ImportFile = new ImportFile(amexLayout);
             if (ImportFile.PrepareFile(fileName))
             {
+                Lines.Clear();
+
                 while (ImportFile.ReadLine() && !ImportFile.ReadFailure)
                 {
 
+                    Lines.Append(ImportFile.Line + Environment.NewLine);
+
                     //The Amex line Identifier is encountered in column 6
+                    //Delimited layout should always mark the column identifier
                     ImportFile.SetIdentificadorCorrente(ImportFile.CurrentLine["Col_6"].ToString());
 
-                    switch ((Amex.TipoRegistro)int.Parse(ImportFile.CurrentIdentifier))
+                    switch ((Amex.RecordType)int.Parse(ImportFile.CurrentIdentifier))
                     {
-                        case Amex.TipoRegistro.Header:
+                        case Amex.RecordType.Header:
 
                             lineHeader = ImportFile.CurrentLineNumber;
                             amexLayout.HeaderRows.Add(new Amex.HeaderRow(ImportFile.CurrentLine));
                             amexLayout.HeaderRows.Last().LineNumber = ImportFile.CurrentLineNumber;
-
-                            if (amexLayout.HeaderRows.Last().EE_REGISTRO_CABECALHO == "")
-                            {
-                                //USE
-                                AddError("ErrorDescription", ImportFile.CurrentLineNumber);
-                                //OR
-                                AddLineError("ErrroCode", "ErrorDescription", ImportFile.CurrentLineNumber);
-                            }
-
                             break;
 
-                        case Amex.TipoRegistro.Pagamento:
+                        case Amex.RecordType.Pagamento:
 
                             linePagamento = ImportFile.CurrentLineNumber;
                             amexLayout.PagamentoRows.Add(new Amex.PagamentoRow(ImportFile.CurrentLine));
@@ -60,7 +56,7 @@ namespace FileImport.LayoutSample
                             amexLayout.PagamentoRows.Last().ParentLineNumber = lineHeader;
                             break;
 
-                        case Amex.TipoRegistro.SOC:
+                        case Amex.RecordType.SOC:
 
                             lineSOC = ImportFile.CurrentLineNumber;
                             amexLayout.SOCRows.Add(new Amex.SOCRow(ImportFile.CurrentLine));
@@ -68,19 +64,19 @@ namespace FileImport.LayoutSample
                             amexLayout.SOCRows.Last().ParentLineNumber = linePagamento;
                             break;
 
-                        case Amex.TipoRegistro.ROC:
+                        case Amex.RecordType.ROC:
                             amexLayout.ROCRows.Add(new Amex.ROCRow(ImportFile.CurrentLine));
                             amexLayout.ROCRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             amexLayout.ROCRows.Last().ParentLineNumber = lineSOC;
                             break;
 
-                        case Amex.TipoRegistro.Ajustes:
+                        case Amex.RecordType.Ajustes:
                             amexLayout.AjustesRows.Add(new Amex.AjustesRow(ImportFile.CurrentLine));
                             amexLayout.AjustesRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             amexLayout.AjustesRows.Last().ParentLineNumber = linePagamento;
                             break;
 
-                        case Amex.TipoRegistro.Trailer:
+                        case Amex.RecordType.Trailer:
                             amexLayout.TrailerRows.Add(new Amex.TrailerRow(ImportFile.CurrentLine));
                             amexLayout.TrailerRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             amexLayout.TrailerRows.Last().ParentLineNumber = lineHeader;
@@ -94,24 +90,69 @@ namespace FileImport.LayoutSample
                     }
 
                 }
+
+                if (ImportFile.Error)
+                {
+                    AddLineError("INTERNAL", ImportFile.ErrorDescription, ImportFile.CurrentLineNumber);
+                }
+
             }
             else
             {
-                AddError(ImportFile.ErrorDescription, ImportFile.CurrentLineNumber); 
+                AddLineError("INTERNAL", ImportFile.ErrorDescription, ImportFile.CurrentLineNumber); 
             }
         }
 
-        public void ValidateStructure(ImportAttributes attr)
+        public void ValidateStructure()
         {
             //TODO: Validate the strucure of the file
+            Amex layout = (Amex)this.ImportFile.ImportAttributes;
+
+            int iResult = 0;
+
+            foreach (Amex.HeaderRow header in layout.HeaderRows)
+            {
+                if(!int.TryParse(header.EE_REGISTRO_CABECALHO, out iResult))
+                {
+                    //Add an Error
+                    //AddLineError("001", "EE_REGISTRO_CABECALHO deve ser numérico", header.LineNumber);
+                }
+
+                foreach (Amex.PagamentoRow pagto in layout.PagamentoRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {
+                    foreach (Amex.SOCRow soc in layout.SOCRows.Where(p => p.ParentLineNumber == pagto.LineNumber))
+                    {
+                        foreach (Amex.ROCRow roc in layout.ROCRows.Where(p => p.ParentLineNumber == soc.LineNumber))
+                        {
+
+                        }
+                        foreach (Amex.AjustesRow ajuste in layout.AjustesRows.Where(p => p.ParentLineNumber == pagto.LineNumber))
+                        {
+
+                        }
+                    }
+                }
+                foreach (Amex.TrailerRow trailer in layout.TrailerRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {
+
+                }
+            }      
         }
 
-        public void Validate(ImportAttributes attr)
+        public void Validate()
         {
+            //TODO: Validate the content of the file
             Amex layout = (Amex)this.ImportFile.ImportAttributes;
 
             foreach (Amex.HeaderRow header in layout.HeaderRows)
             {
+
+                if (header.EE_REGISTRO_CABECALHO == "")
+                {
+                    //Add an Error
+                    //AddLineError("001", "Registro Inválido", header.LineNumber);
+                }
+
                 foreach(Amex.PagamentoRow pagto in layout.PagamentoRows.Where(p => p.ParentLineNumber == header.LineNumber))
                 {
                     foreach(Amex.SOCRow soc in layout.SOCRows.Where(p => p.ParentLineNumber == pagto.LineNumber))
@@ -137,6 +178,29 @@ namespace FileImport.LayoutSample
         public void Save()
         {
             //TODO: Save the data
+            Amex layout = (Amex)this.ImportFile.ImportAttributes;
+
+            foreach (Amex.HeaderRow header in layout.HeaderRows)
+            {
+                foreach (Amex.PagamentoRow pagto in layout.PagamentoRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {
+                    foreach (Amex.SOCRow soc in layout.SOCRows.Where(p => p.ParentLineNumber == pagto.LineNumber))
+                    {
+                        foreach (Amex.ROCRow roc in layout.ROCRows.Where(p => p.ParentLineNumber == soc.LineNumber))
+                        {
+
+                        }
+                        foreach (Amex.AjustesRow ajuste in layout.AjustesRows.Where(p => p.ParentLineNumber == pagto.LineNumber))
+                        {
+
+                        }
+                    }
+                }
+                foreach (Amex.TrailerRow trailer in layout.TrailerRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {
+                }
+            }
+
         }
 
         #endregion

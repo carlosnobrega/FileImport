@@ -32,18 +32,23 @@ namespace FileImport.LayoutSample
             if (ImportFile.PrepareFile(fileName))
             {
 
+                Lines.Clear();
+
                 while ((ImportFile.ReadLine() && !ImportFile.ReadFailure))
                 {
-                    switch ((Hipercard.TipoRegistro)int.Parse(ImportFile.CurrentIdentifier))
+
+                    Lines.Append(ImportFile.Line + Environment.NewLine);
+                    
+                    switch ((Hipercard.RecordType)int.Parse(ImportFile.CurrentIdentifier))
                     {
-                        case Hipercard.TipoRegistro.Header:
+                        case Hipercard.RecordType.Header:
 
                             lineHeader = ImportFile.CurrentLineNumber;
                             hipercardLayout.HeaderRows.Add(new Hipercard.HeaderRow(ImportFile.CurrentLine));
                             hipercardLayout.HeaderRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             break;
 
-                        case Hipercard.TipoRegistro.CapaLote:
+                        case Hipercard.RecordType.CapaLote:
 
                             lineCapaLote = ImportFile.CurrentLineNumber;
                             hipercardLayout.CapaLoteRows.Add(new Hipercard.CapaLoteRow(ImportFile.CurrentLine));
@@ -51,42 +56,42 @@ namespace FileImport.LayoutSample
                             hipercardLayout.CapaLoteRows.Last().ParentLineNumber = lineHeader;
 
                             break;
-                        case Hipercard.TipoRegistro.MovimentoVenda:
+                        case Hipercard.RecordType.MovimentoVenda:
 
                             hipercardLayout.MovVendaRows.Add(new Hipercard.MovimentoVendaRow(ImportFile.CurrentLine));
                             hipercardLayout.MovVendaRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             hipercardLayout.MovVendaRows.Last().ParentLineNumber = lineCapaLote;
 
                             break;
-                        case Hipercard.TipoRegistro.PrevisaoPagamento:
+                        case Hipercard.RecordType.PrevisaoPagamento:
 
                             hipercardLayout.PrevPagtoRows.Add(new Hipercard.PrevisaoPagamentoRow(ImportFile.CurrentLine));
                             hipercardLayout.PrevPagtoRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             hipercardLayout.PrevPagtoRows.Last().ParentLineNumber = lineCapaLote;
 
                             break;
-                        case Hipercard.TipoRegistro.Desagendamento:
+                        case Hipercard.RecordType.Desagendamento:
 
                             hipercardLayout.DesagendaRows.Add(new Hipercard.DesagendamentoRow(ImportFile.CurrentLine));
                             hipercardLayout.DesagendaRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             hipercardLayout.DesagendaRows.Last().ParentLineNumber = lineCapaLote;
 
                             break;
-                        case Hipercard.TipoRegistro.Ajustes:
+                        case Hipercard.RecordType.Ajustes:
 
                             hipercardLayout.AjustesRows.Add(new Hipercard.AjustesRow(ImportFile.CurrentLine));
                             hipercardLayout.AjustesRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             hipercardLayout.AjustesRows.Last().ParentLineNumber = lineCapaLote;
 
                             break;
-                        case Hipercard.TipoRegistro.Tarifas:
+                        case Hipercard.RecordType.Tarifas:
 
                             hipercardLayout.TarifasRows.Add(new Hipercard.TarifasRow(ImportFile.CurrentLine));
                             hipercardLayout.TarifasRows.Last().LineNumber = ImportFile.CurrentLineNumber;
                             hipercardLayout.TarifasRows.Last().ParentLineNumber = lineCapaLote;
 
                             break;
-                        case Hipercard.TipoRegistro.Trailer:
+                        case Hipercard.RecordType.Trailer:
 
                             hipercardLayout.TrailerRows.Add(new Hipercard.TrailerRow(ImportFile.CurrentLine));
                             hipercardLayout.TrailerRows.Last().LineNumber = ImportFile.CurrentLineNumber;
@@ -101,16 +106,56 @@ namespace FileImport.LayoutSample
                     }
 
                 }
+
+                if (ImportFile.Error)
+                {
+                    AddLineError("INTERNAL", ImportFile.ErrorDescription, ImportFile.CurrentLineNumber);
+                }
+
             }
         }
 
-        public void ValidateStructure(ImportAttributes attr)
+        public void ValidateStructure()
         {
             //TODO: Validate the strucure of the file
+            Hipercard layout = (Hipercard)this.ImportFile.ImportAttributes;
+
+            foreach (Hipercard.HeaderRow header in layout.HeaderRows)
+            {
+                
+                foreach (Hipercard.CapaLoteRow capalote in layout.CapaLoteRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {
+                    foreach (Hipercard.MovimentoVendaRow movtovenda in layout.MovVendaRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {
+                    }
+
+                    foreach (Hipercard.DesagendamentoRow desagendamento in layout.DesagendaRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {
+                    }
+
+                    foreach (Hipercard.AjustesRow ajuste in layout.AjustesRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {
+                    }
+
+                    foreach (Hipercard.TarifasRow tarifa in layout.TarifasRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {                       
+                    }
+                }
+
+                foreach (Hipercard.TrailerRow trailer in layout.TrailerRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {                    
+                }
+            }
+
         }
 
-        public void Validate(ImportAttributes attr)
+        public void Validate()
         {
+            //TODO: Test Only
+            return;
+
+
+            //TODO: Validate the content of the file
             Hipercard layout = (Hipercard)this.ImportFile.ImportAttributes;
 
             int[] lotes1 = {
@@ -346,6 +391,38 @@ namespace FileImport.LayoutSample
         public void Save()
         {
             //TODO: Save the data
+            Hipercard layout = (Hipercard)this.ImportFile.ImportAttributes;
+
+            foreach (Hipercard.HeaderRow header in layout.HeaderRows)
+            {
+
+                foreach (Hipercard.CapaLoteRow capalote in layout.CapaLoteRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {
+                    foreach (Hipercard.MovimentoVendaRow movtovenda in layout.MovVendaRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {
+                    }
+
+
+                    foreach (Hipercard.DesagendamentoRow desagendamento in layout.DesagendaRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {
+                    }
+
+
+                    foreach (Hipercard.AjustesRow ajuste in layout.AjustesRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {
+                    }
+
+                    foreach (Hipercard.TarifasRow tarifa in layout.TarifasRows.Where(p => p.ParentLineNumber == capalote.LineNumber))
+                    {
+                    }
+                }
+
+
+                foreach (Hipercard.TrailerRow trailer in layout.TrailerRows.Where(p => p.ParentLineNumber == header.LineNumber))
+                {
+                }
+            }
+
         }
         
     }

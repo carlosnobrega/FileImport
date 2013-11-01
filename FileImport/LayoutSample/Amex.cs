@@ -20,7 +20,7 @@ namespace FileImport.LayoutSample
         #endregion
 
         #region "Enum"
-        public enum TipoRegistro
+        public enum RecordType
         {
             Header = 0,
             Pagamento = 1,

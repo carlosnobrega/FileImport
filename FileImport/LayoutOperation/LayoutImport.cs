@@ -36,14 +36,14 @@ namespace FileImport.LayoutOperation
             //TODO: FEEL FREE TO CHANGE THE STRUCTURE AND THE METHOD SIGNATURE
             if(!ImportOnlyFirstLine)
             {
-                Layout.ValidateStructure(_layoutBase.Attributes);
+                Layout.ValidateStructure();
                 if (_layoutBase.HasError)
                 {
                     _breakPoint = BreakPoint.ValidateStructure;
                     return;  
                 }
 
-                Layout.Validate(_layoutBase.Attributes);
+                Layout.Validate();
                 if (_layoutBase.HasError)
                 {
                     _breakPoint = BreakPoint.Validate;

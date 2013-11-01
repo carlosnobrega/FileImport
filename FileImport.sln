@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileImport", "FileImport.csproj", "{AD7658C2-7BEB-4CBA-B11A-2E83FB847892}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileImport", "FileImport\FileImport.csproj", "{AD7658C2-7BEB-4CBA-B11A-2E83FB847892}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "..\Test\Test.csproj", "{41AC6BFB-263E-40A2-B802-6EE0F59EC7B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{41AC6BFB-263E-40A2-B802-6EE0F59EC7B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

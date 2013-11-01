@@ -16,10 +16,10 @@ namespace FileImport.Interface
         void Import(string fileName);
 
         //Used to validate the structure of the file
-        void ValidateStructure(ImportAttributes attr);
+        void ValidateStructure();
 
         //Used to validate the data present on the file
-        void Validate(ImportAttributes attr);
+        void Validate();
 
         //Used to save the data
         void Save();

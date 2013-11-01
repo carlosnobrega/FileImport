@@ -12,17 +12,24 @@ namespace FileImport.Base
         public ImportFile ImportFile { get; set; }
         public ImportAttributes Attributes { get; set; }
         public bool ImportOnlyFirstLine { get; set; }
+        public StringBuilder Lines { get; set; }
         #endregion
 
-        #region Erro
-        private List<LineError> _lineErrors = new List<LineError>();
-        private List<string> _error = new List<string>();
+        #region Constructor
+        public LayoutBase()
+        {
+            Lines = new StringBuilder();
+        }
+        #endregion
 
+        #region Methods
+        private List<LineError> _lineErrors = new List<LineError>();
+        
         public bool HasError
         {
             get
             {   
-                return (_error.Count > 0) || (_lineErrors.Count > 0);
+                return (_lineErrors.Count > 0);
             }
         }
 
@@ -34,32 +41,17 @@ namespace FileImport.Base
             }
         }
 
-        public void AddError(string msg , int line)
-        {
-            _error.Add(string.Format(msg + ". Linha: {0}", line));
-        }
-
         public void AddLineError(string code, string msg, int line)
         {
-            _lineErrors.Add(new LineError(code, string.Format(msg + ". Linha: {0}", line), line));
+            _lineErrors.Add(new LineError(code, (line > 0 ? string.Format(msg + ". Linha: {0}", line) : msg + "."), line));
         }
 
         public string GetErrors()
         {
             StringBuilder sb = new StringBuilder();
-            if(_error.Count > 0)
+            foreach(LineError e in _lineErrors)
             {
-                foreach(string s in _error)
-                {
-                    sb.Append(s + Environment.NewLine);
-                }
-            }
-            else
-            {
-                foreach(LineError e in _lineErrors)
-                {
-                    sb.Append(e.ErrorDescription + Environment.NewLine);
-                }
+                sb.Append(e.ErrorCode + " - " + e.ErrorDescription + Environment.NewLine);
             }
             return sb.ToString();
         }
