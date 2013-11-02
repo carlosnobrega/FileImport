@@ -27,11 +27,14 @@ namespace Test
             LayoutImport li = importFile("SampleFiles\\Sample1.txt", LayoutType.Sample1);
             if (li != null)
             {
+                Sample1 layout = (Sample1)li.LayoutBase.ImportFile.ImportAttributes;
+                
+                //Mostra o arquivo lido na integra
                 txtResult2.Text = li.LayoutBase.Lines.ToString();
-
+                
+                //Mostar apenas as colunas mapeadas
                 StringBuilder sb = new StringBuilder();
                 
-                Sample1 layout = (Sample1)li.LayoutBase.ImportFile.ImportAttributes;
                 foreach(Sample1.HeaderRow header in layout.HeaderRows)
                 {
                     sb.Append(header.Field1 + " ");
@@ -63,11 +66,14 @@ namespace Test
             LayoutImport li = importFile("SampleFiles\\Sample2.txt", LayoutType.Sample2);
             if (li != null)
             {
-                txtResult2.Text = li.LayoutBase.Lines.ToString();
+                Sample2 layout = (Sample2)li.LayoutBase.ImportFile.ImportAttributes;
 
+                //Mostra o arquivo lido na integra
+                txtResult2.Text = li.LayoutBase.Lines.ToString();
+                
+                //Mostar apenas as colunas mapeadas
                 StringBuilder sb = new StringBuilder();
                 
-                Sample2 layout = (Sample2)li.LayoutBase.ImportFile.ImportAttributes;
                 foreach (Sample2.HeaderRow header in layout.HeaderRows)
                 {
                     sb.Append(header.Field1 + " ");
@@ -99,17 +105,16 @@ namespace Test
             LayoutImport li = importFile("SampleFiles\\Amex.txt", LayoutType.Amex);
             if (li != null)
             { 
-                //Get the lines
-
                 Amex layout = (Amex)li.LayoutBase.ImportFile.ImportAttributes;
 
+                //Mostra o arquivo lido na integra
                 txtResult2.Text = li.LayoutBase.Lines.ToString();
-
+                
+                //Mostar apenas as colunas mapeadas
                 StringBuilder sb = new StringBuilder();
                 string tab1 = "    ";
                 string tab2 = "        ";
                 string tab3 = "            ";
-
                 foreach (Amex.HeaderRow header in layout.HeaderRows)
                 {
                     sb.Append(header.LineNumber + Environment.NewLine);
@@ -150,12 +155,12 @@ namespace Test
             LayoutImport li = importFile("SampleFiles\\Hipercard.txt", LayoutType.Hipercard);
             if (li != null)
             {             
-                //Get the lines
-
                 Hipercard layout = (Hipercard)li.LayoutBase.ImportFile.ImportAttributes;
 
+                //Mostra o arquivo lido na integra
                 txtResult2.Text = li.LayoutBase.Lines.ToString();
 
+                //Mostar apenas as colunas mapeadas
                 StringBuilder sb = new StringBuilder();
                 string tab1 = "    ";
                 string tab2 = "        ";
